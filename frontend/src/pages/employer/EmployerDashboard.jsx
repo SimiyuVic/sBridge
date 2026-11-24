@@ -1,5 +1,29 @@
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+
 
 const EmployerDashboard = () => {
+
+    const [allData, setAllData] = useState(null);
+    const backendLink = useSelector((state) => state.prod.link);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${backendLink}/api/v1/employer/dashboard-data`, {
+                    withCredentials: true
+                });
+
+                setAllData(response.data.allJobs.jobData);
+            }
+            catch (error) {
+                toast.error(error.response.data.message);
+            }
+        }
+        fetchData();
+    }, []);
+
     return (
         <div className="p-3">
             <div className="mb-4">
@@ -13,7 +37,17 @@ const EmployerDashboard = () => {
                 <div className="col-md-4">
                     <div className="border rounded-3 p-3">
                         <p className="text-muted mb-2">Posted Jobs</p>
-                        <h3 className="fw-bold mb-0">--</h3>
+                        {
+                            allData ? (
+                                <h3 className="fw-bold mb-0">
+                                    {allData}
+                                </h3>
+                            ) : (
+                                <h3 className="fw-bold mb-0">
+                                    --
+                                </h3>
+                            )
+                        }
                         <small className="text-muted">Your job listings</small>
                     </div>
                 </div>

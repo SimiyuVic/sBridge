@@ -2,6 +2,7 @@ import express from "express";
 import { 
     createJob, 
     createUser, 
+    dashboardData, 
     employerJobs } from "../controllers/employer.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
@@ -21,5 +22,10 @@ router.get("/fetch-jobs",
     authMiddleware.verifyToken,
     authMiddleware.authorizeRole("employer"),
     employerJobs);
+
+//count jobs
+router.get("/dashboard-data", 
+    authMiddleware.verifyToken,
+    dashboardData);
 
 export default router;

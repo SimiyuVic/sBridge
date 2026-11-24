@@ -79,7 +79,7 @@ const EmployerSettings = () => {
                                             className="w-100 h-100"
                                             style={{ objectFit: "cover" }}
                                         />
-                                    ) : userData.avatar ? (
+                                    ) : userData?.avatar ? (
                                         <img
                                             src={userData?.avatar}
                                             className="w-100 h-100"

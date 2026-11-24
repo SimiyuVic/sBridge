@@ -158,5 +158,29 @@ export const changeAvatar = async (req, res) => {
       message: "Something went wrong"
     });
   }
+};
+
+export const changePassword = async(req, res)=>{
+  try {
+    const { password, confirmPassword, newPassword } = req.body;
+
+    if(!password || !confirmPassword || !newPassword){
+      return res.status(400).json({
+        success: false,
+        message: "All fields required"
+      });
+    }
+
+    //checj passwors
+    const isMatch = await User.findOne({password});
+    
+
+  } catch (error) {
+    //console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Something wemt wrong"
+    });
+  }
 }
 

@@ -130,4 +130,29 @@ export const employerJobs = async (req, res) => {
       message: "Something went wrong"
     });
   }
-}
+};
+
+//employer dasbhoard
+export const dashboardData = async (req, res) => {
+  const { user } = req;
+  try {
+
+    //fetch jobs
+    const employerId = user._id;
+    const jobData = await Job.countDocuments({ employer: employerId });
+
+    return res.status(200).json({
+      success: true,
+      allJobs: {
+        jobData
+      }
+    });
+  }
+  catch (error) {
+    //console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong"
+    });
+  }
+};

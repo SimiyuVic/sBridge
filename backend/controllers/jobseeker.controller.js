@@ -1,3 +1,4 @@
+import Job from "../models/job.model.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 
@@ -62,3 +63,28 @@ export const createJobSeeker = async (req, res) => {
     });
   }
 };
+
+//all jobs
+export const fetchAllJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find();
+
+    if (!jobs) {
+      return res.status(404).json({
+        success: false,
+        message: "No jobs found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      jobs
+    });
+  } catch (error) {
+    //console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong"
+    });
+  }
+}
