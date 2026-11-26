@@ -50,6 +50,7 @@ import JobSeekerApplication from "./pages/jobseeker/Applications.jsx";
 import SeekerHelp from "./pages/jobseeker/Help.jsx";
 import SeekerSettings from "./pages/jobseeker/Settings.jsx";
 import Skills from "./pages/jobseeker/Skills.jsx";
+import JobDetailsEditPage from "./pages/employer/JobDetails.jsx";
 
 
 function App() {
@@ -146,6 +147,7 @@ function App() {
             <Route path="applicants" element={<Applicants />} />
             <Route path="post-job" element={<JobPost />} />
             <Route path="settings" element={<EmployerSettings />} />
+            <Route path="edit/:id" element={ <JobDetailsEditPage /> } />
           </Route>
 
 

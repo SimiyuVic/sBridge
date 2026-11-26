@@ -3,6 +3,7 @@ import {
     changeAvatar,
     checkCookie,
     getUserData,
+    jobDetails,
     loginUser,
     logoutUser
 } from "../controllers/auth.controller.js";
@@ -25,5 +26,8 @@ router.patch("/change-avatar",
     authMiddleware.verifyToken,
     upload.single("image"),
     changeAvatar);
+
+//fetch job details
+router.get("/job-details/:id", jobDetails);
 
 export default router;

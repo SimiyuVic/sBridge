@@ -1,70 +1,82 @@
-import { Link, useParams } from "react-router-dom"
-import useFetch from "../hook/useFetch.js";
-import { CiLocationOn } from "react-icons/ci";
-import { IoBriefcaseOutline } from "react-icons/io5";
+import { Link, useParams } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
 
 
 
 const JobDetails = () => {
 
     const { id } = useParams();
-    const { allData: job, error, loading } = useFetch(`http://localhost:4000/jobs/${id}`);
+    //console.log(id);
+    const [loading, setLoading] = useState(false);
+    const [job, setJob] = useState(null);
+    const backendLink = useSelector((state) => state.prod.link);
+    const status = useSelector((state) => state.auth.isLoggedIn);
+    const user = useSelector((state) => state.auth.user);
+
+    useEffect(() => {
+        const fetchJobDetails = async () => {
+            try {
+                const response = await axios.get(`${backendLink}/api/v1/auth/job-details/${id}`, {
+                    withCredentials: true
+                });
+                setJob(response?.data.jobDetails);
+            }
+            catch (error) {
+                toast.error(error.response?.data.message || "Cannot fetch job details");
+                console.log(error);
+            }
+        }
+        fetchJobDetails();
+    }, [backendLink])
 
 
     return (
         <div>
-            <div className="container mt-3">
-                {loading && (
-                    <div className="d-flex align-items-center gap-2 text-success fw-semibold">
-                        <div className="spinner-border spinner-border-sm" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </div>
-                        <span>Loading job details, please wait...</span>
+            <div className="container my-3">
+                <div className="row">
+                    <div className="card col md-8 p-3 shadow-sm border-0">
+                        <h5>
+                            {job?.companyName}
+                        </h5>
+                        <h6>
+                            {job?.location}
+                        </h6>
+                        <h6>
+                            {job?.jobTitle}
+                        </h6>
+                        <span className="border-bottom p-3" />
+                        <p>
+                            {job?.jobDescription}
+                        </p>
+                        <p>
+                            {job?.jobRequirements}
+                        </p>
                     </div>
-                )}
-                {error &&  <div className="text-danger fw-bold"> { error } </div> }
-                {job &&
-                    <div className="row gap-4">
-                        <div className="col-md-7">
-                            <div className="card border-0 shadow-sm p-3">
-                                <h4>
-                                    {job.jobTitle}
-                                </h4>
-                                <h6 className="text-primary">
-                                    {job.companyName}
-                                </h6>
-                                <span className="border-bottom my-2" />
-                                <div className="d-flex justify-content-between">
-                                    <span>
-                                        <h6>Location</h6>
-                                        <CiLocationOn /> {job.location}
-                                    </span>
-                                    <span>
-                                        <h6>Employment Type</h6>
-                                        <IoBriefcaseOutline /> {job.discretion}
-                                    </span>
-                                </div>
-                                <h6 className="my-3"> Job Description</h6>
-                                <p>
-                                    {job.jobDescription}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="col-md-4">
-                            <div className="card border-0 shadow-sm p-3">
-                                <h5 className="p-2">
-                                    Interested in this job?
+                    {
+                        status && user.role === "jobseeker" ? (
+                            <div className="col-md-4 card shadow-sm border-0 p-3">
+                                <h5>
+                                    Ready For Your New Job
                                 </h5>
-                                <small className="p-2 text-muted">
-                                    Apply now and take next steps towards your career.
-                                </small>
-                                <Link className="btn btn-primary btn-sm">
+                                <h6>
+                                    Apply Here
+                                </h6>
+                                <button
+                                    className="btn btn-primary"
+                                >
                                     Apply Now
-                                </Link>
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                }
+                        ) : (
+                            <div>
+
+                            </div>
+                        )
+                    }
+                </div>
             </div>
         </div>
     );

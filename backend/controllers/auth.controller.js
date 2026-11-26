@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Job from "../models/job.model.js";
 
 export const loginUser = async (req, res) => {
   try {
@@ -180,6 +181,33 @@ export const changePassword = async(req, res)=>{
     return res.status(500).json({
       success: false,
       message: "Something wemt wrong"
+    });
+  }
+};
+
+//fetch job details
+export const jobDetails = async(req, res)=>{
+  try{
+   const jobDetails = await Job.findById(req.params.id);
+    //console.log(jobDetails);
+
+    if(!jobDetails){
+      return res.status(404).json({
+        success: false,
+        message: "Job does not exist"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      jobDetails
+    });
+  }
+  catch(error){
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong"
     });
   }
 }

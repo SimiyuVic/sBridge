@@ -1,5 +1,5 @@
 import express from "express";
-import { fetchUsers } from "../controllers/admin.controller.js";
+import { dashboardData, fetchUsers } from "../controllers/admin.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
 
@@ -11,5 +11,9 @@ router.get("/all-users",
     authMiddleware.authorizeRole("admin"),
     fetchUsers);
 
-
+//dashboard data
+router.get("/dashboard", 
+    authMiddleware.verifyToken,
+    authMiddleware.authorizeRole("admin"),
+    dashboardData);
 export default router;

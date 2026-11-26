@@ -6,6 +6,7 @@ import { AiOutlineDashboard } from "react-icons/ai";
 import { FaUsers, FaCog } from "react-icons/fa";
 import { MdWork, MdPostAdd } from "react-icons/md";
 
+
 const EmployerLayout = () => {
 
     const employerLinks = [
@@ -33,7 +34,7 @@ const EmployerLayout = () => {
             name: "Settings",
             path: "/employer/settings",
             icon: <FaCog />
-        }
+        },
     ];
 
     return (
