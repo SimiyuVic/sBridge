@@ -44,6 +44,32 @@ const JobList = () => {
         fetchJobs();
     }, [backendLink]);
 
+    //delete job
+
+    const deleteJob = async (jobId) => {
+        try {
+            const response = await axios.delete(
+                `${backendLink}/api/v1/employer/delete-job/${jobId}`,
+                { withCredentials: true }
+            );
+
+            if (response.data.success) {
+                toast.success(response.data.message);
+
+                // Remove the deleted job from the UI
+                setJobs((prevJobs) =>
+                    prevJobs.filter((job) => job._id !== jobId)
+                );
+            }
+
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message || "Failed to delete job"
+            );
+        }
+    };
+
+
     // Pay for a job
     const payJob = async (jobId) => {
         try {
@@ -180,99 +206,106 @@ const JobList = () => {
                     {jobs?.map((job) => (
 
                         <div className="col-12" key={job._id}>
+                            <div className="card border-0 shadow-sm rounded-3">
 
-                            <Link
-                            style={{
-                                textDecoration: "none"
-                            }}
-                            to={`/employer/edit/${job._id}`}
-                            >
-                                <div className="card border-0 shadow-sm rounded-3">
+                                <div className="card-body p-4">
 
-                                    <div className="card-body p-4">
+                                    <div className="row align-items-center g-3">
 
-                                        <div className="row align-items-center g-3">
+                                        {/* Job Information */}
+                                        <div className="col-lg-8">
 
-                                            {/* Job Information */}
-                                            <div className="col-lg-8">
+                                            <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
 
-                                                <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                                <h5 className="fw-bold mb-0">
+                                                    {job.jobTitle}
+                                                </h5>
 
-                                                    <h5 className="fw-bold mb-0">
-                                                        {job.jobTitle}
-                                                    </h5>
-
-                                                    {job.paymentStatus === "paid" ? (
-                                                        <span className="badge bg-success bg-opacity-10 text-success px-3 py-2">
-                                                            <FaCheckCircle className="me-1" />
-                                                            Published
-                                                        </span>
-                                                    ) : (
-                                                        <span className="badge bg-warning bg-opacity-10 text-warning px-3 py-2">
-                                                            Pending Payment
-                                                        </span>
-                                                    )}
-
-                                                </div>
-
-                                                <div className="d-flex flex-wrap gap-3 text-muted small mb-3">
-
-                                                    <span>
-                                                        <FaMapMarkerAlt className="me-1" />
-                                                        {job.location}
+                                                {job.paymentStatus === "paid" ? (
+                                                    <span className="badge bg-success bg-opacity-10 text-success px-3 py-2">
+                                                        <FaCheckCircle className="me-1" />
+                                                        Published
                                                     </span>
-
-                                                    <span>
-                                                        <FaClock className="me-1" />
-                                                        {job.experience}
+                                                ) : (
+                                                    <span className="badge bg-warning bg-opacity-10 text-warning px-3 py-2">
+                                                        Pending Payment
                                                     </span>
-
-                                                    <span>
-                                                        <FaBriefcase className="me-1" />
-                                                        {job.employmentType}
-                                                    </span>
-
-                                                </div>
-
-                                                <p className="text-muted mb-0" style={{ lineHeight: "1.7" }}>
-                                                    {job.jobDescription?.slice(0, 150)}
-                                                    {job.jobDescription?.length > 150 && "..."}
-                                                </p>
+                                                )}
 
                                             </div>
 
-                                            {/* Actions */}
-                                            <div className="col-lg-4">
+                                            <div className="d-flex flex-wrap gap-3 text-muted small mb-3">
 
-                                                <div className="d-flex flex-column align-items-lg-end gap-2">
+                                                <span>
+                                                    <FaMapMarkerAlt className="me-1" />
+                                                    {job.location}
+                                                </span>
 
-                                                    {job.paymentStatus === "unpaid" ? (
+                                                <span>
+                                                    <FaClock className="me-1" />
+                                                    {job.experience}
+                                                </span>
 
-                                                        <>
-                                                            <button
-                                                                className="btn btn-primary px-4 py-2 fw-semibold"
-                                                                onClick={() => payJob(job._id)}
-                                                            >
-                                                                <FaMoneyBillWave className="me-2" />
-                                                                Pay & Publish
-                                                                <FaArrowRight className="ms-2" />
-                                                            </button>
+                                                <span>
+                                                    <FaBriefcase className="me-1" />
+                                                    {job.employmentType}
+                                                </span>
 
-                                                            <small className="text-muted">
-                                                                Complete payment to publish this job
-                                                            </small>
-                                                        </>
+                                            </div>
 
-                                                    ) : (
+                                            <p className="text-muted mb-0" style={{ lineHeight: "1.7" }}>
+                                                {job.jobDescription?.slice(0, 150)}
+                                                {job.jobDescription?.length > 150 && "..."}
+                                            </p>
 
-                                                        <span className="text-success fw-semibold">
-                                                            <FaCheckCircle className="me-2" />
-                                                            Successfully Published
-                                                        </span>
+                                            <Link
+                                                className="btn btn-warning"
+                                                style={{
+                                                    textDecoration: "none"
+                                                }}
+                                                to={`/employer/edit/${job._id}`}
+                                            >
+                                                View Job
+                                            </Link>
+                                            <button
+                                                className="btn btn-danger ms-2"
+                                                onClick={() => deleteJob(job._id)}
+                                            >
+                                                Delete Job
+                                            </button>
 
-                                                    )}
+                                        </div>
 
-                                                </div>
+                                        {/* Actions */}
+                                        <div className="col-lg-4">
+
+                                            <div className="d-flex flex-column align-items-lg-end gap-2">
+
+                                                {job.paymentStatus === "unpaid" ? (
+
+                                                    <>
+                                                        <button
+                                                            className="btn btn-primary px-4 py-2 fw-semibold"
+                                                            onClick={() => payJob(job._id)}
+                                                        >
+                                                            <FaMoneyBillWave className="me-2" />
+                                                            Pay & Publish
+                                                            <FaArrowRight className="ms-2" />
+                                                        </button>
+
+                                                        <small className="text-muted">
+                                                            Complete payment to publish this job
+                                                        </small>
+                                                    </>
+
+                                                ) : (
+
+                                                    <span className="text-success fw-semibold">
+                                                        <FaCheckCircle className="me-2" />
+                                                        Successfully Published
+                                                    </span>
+
+                                                )}
 
                                             </div>
 
@@ -281,7 +314,8 @@ const JobList = () => {
                                     </div>
 
                                 </div>
-                            </Link>
+
+                            </div>
 
                         </div>
 

@@ -2,18 +2,19 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 
 const JobDetailsEditPage = () => {
 
     const backendLink = useSelector((state) => state.prod.link);
     const { id } = useParams();
+    const redirect = useNavigate();
 
     const [jobTitle, setTitle] = useState("");
     const [location, setLocation] = useState("");
-    const [employmentType, setType] = useState("");
-    const [experience, setExperience] = useState("");
+    // const [employmentType, setType] = useState("");
+    // const [experience, setExperience] = useState("");
     const [jobDescription, setDescription] = useState("");
     const [jobRequirements, setRequirememnts] = useState("");
 
@@ -24,7 +25,7 @@ const JobDetailsEditPage = () => {
                     withCredentials: true
                 });
 
-                console.log(response?.data.jobDetails);
+                //console.log(response?.data.jobDetails);
 
                 setTitle(response?.data.jobDetails.jobTitle || "");
                 setLocation(response?.data.jobDetails.location || "");
@@ -37,12 +38,31 @@ const JobDetailsEditPage = () => {
             }
         }
         jobDetails();
-    }, [])
+    }, []);
+
+     const updateJobDetails = async(e)=>{
+        e.preventDefault();
+
+        const jobData = { jobTitle, location, jobDescription, jobRequirements};
+
+        try{
+            const response =await axios.put(`${backendLink}/api/v1/employer/update-job/${id}`, jobData, {
+                withCredentials: true
+            });
+
+            redirect("/employer/jobs");
+            toast.success(response?.data.message);
+        }
+        catch(error){
+            console.log(error)
+            toast.error(error.response?.data.message || "cannot update job");
+        }
+    }
 
     return (
         <div>
             <div className="card shadow-sm p-3">
-                <form>
+                <form onSubmit={updateJobDetails}>
                     <div className="mb-3">
                         <label class="form-label mb-2">Job Title</label>
                         <input
@@ -64,7 +84,7 @@ const JobDetailsEditPage = () => {
                     <div class="mb-3 form-field">
                         <label for="exampleFormControlTextarea2" className="form-label">Job Description</label>
                         <textarea
-                        value={jobDescription}
+                            value={jobDescription}
                             onChange={(e) => setDescription(e.target.value)}
                             className="form-control"
                             rows="4"></textarea>
@@ -72,7 +92,7 @@ const JobDetailsEditPage = () => {
                     <div class="mb-3 form-field">
                         <label for="exampleFormControlTextarea2" className="form-label">Job Requirements</label>
                         <textarea
-                        value={jobRequirements}
+                            value={jobRequirements}
                             onChange={(e) => setRequirememnts(e.target.value)}
                             className="form-control"
                             rows="4"></textarea>
